@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +21,30 @@ public class AvatarController {
 
     @PostMapping("/createAvatar")
     public ResponseEntity<AvatarDto> uploadAvatar(@RequestParam("icp") String icp, @RequestParam("file") MultipartFile file) {
+        return new ResponseEntity<>(
+                avatarService.createAvatarDto(icp, file), HttpStatus.OK);
+    }
+
+    @GetMapping("/getAvatar")
+    public ResponseEntity<AvatarDto> getAvatar(@RequestParam("icp") String icp) {
+        return avatarService.getAvatarDto(icp);
+    }
+
+    @GetMapping("/getAllAvatars")
+    public ResponseEntity<List<AvatarDto>> getAllAvatars(@RequestParam("icp") String icp) {
+        return avatarService.getAllAvatarsDto(icp);
+    }
+
+    @DeleteMapping("/deleteAvatars")
+    public ResponseEntity<HttpStatus> deleteAvatars(@RequestParam("icp") String icp,
+                                                    @RequestParam("flags") List<Boolean> flags) {
+        avatarService.deleteAvatars(icp, flags);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/setActiveAvatar")
+    public ResponseEntity<AvatarDto> setActiveAvatar(@RequestParam("icp") String icp,
+                                                     @RequestParam("file") MultipartFile file) {
         return new ResponseEntity<>(
                 avatarService.createAvatarDto(icp, file), HttpStatus.OK);
     }

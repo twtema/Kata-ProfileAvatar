@@ -14,4 +14,8 @@ public class UrlProperties {
     private String profileLoaderBaseUrl;
 
     private String profileLoaderPostAvatar;
+    private String profileLoaderGetAvatar;
+    private String profileLoaderGetAllAvatars;
+    private String profileLoaderDeleteAvatar;
+    private String profileLoaderPatchAvatar;
 }
