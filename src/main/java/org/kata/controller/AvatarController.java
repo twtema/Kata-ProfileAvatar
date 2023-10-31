@@ -1,5 +1,10 @@
 package org.kata.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.kata.dto.AvatarDto;
 import org.kata.exception.AvatarException;
@@ -23,17 +28,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public class AvatarController {
 
     private final AvatarService avatarService;
+
     @Operation(summary = "Создать новый Avatar", description = "Сохраняет и возвращает DTO нового аватара")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Avatar успешно создан"),
             @ApiResponse(responseCode = "400", description = "Неверный запрос")
     })
-
     @PostMapping("/createAvatar")
     public ResponseEntity<AvatarDto> uploadAvatar(@RequestParam("icp") String icp, @RequestParam("file") MultipartFile file) {
         return new ResponseEntity<>(
                 avatarService.createAvatarDto(icp, file), HttpStatus.OK);
     }
+
     @Operation(summary = "Получить Avatar по icp",
             description= "Возвращает DTO Avatar по ICP")
     @GetMapping("/getAvatar")
@@ -72,6 +78,14 @@ public class AvatarController {
         return new ResponseEntity<>(
                 avatarService.createAvatarDto(icp, file), HttpStatus.ACCEPTED);
     }
+
+
+    @Operation(summary = "Error")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Invalid info",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Avatar not found",
+                    content = @Content) })
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(AvatarException.class)
