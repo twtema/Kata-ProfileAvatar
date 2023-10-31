@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.kata.dto.AvatarDto;
 import org.kata.exception.AvatarException;
 import org.kata.exception.AvatarNotFoundException;
+import org.kata.exception.ImageIsCorruptedException;
 import org.kata.service.AvatarService;
 import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class AvatarController {
             @ApiResponse(responseCode = "200", description = "Avatar успешно создан"),
             @ApiResponse(responseCode = "400", description = "Неверный запрос")
     })
+
     @PostMapping("/createAvatar")
     public ResponseEntity<AvatarDto> uploadAvatar(@RequestParam("icp") String icp, @RequestParam("file") MultipartFile file) {
         return new ResponseEntity<>(
@@ -73,6 +75,12 @@ public class AvatarController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(AvatarException.class)
     public ErrorMessage getAvatarHandler(AvatarNotFoundException e) {
+        return new ErrorMessage(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ImageIsCorruptedException.class)
+    public ErrorMessage postAvatarHandler(ImageIsCorruptedException e) {
         return new ErrorMessage(e.getMessage());
     }
 }

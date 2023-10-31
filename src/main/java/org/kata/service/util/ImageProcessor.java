@@ -2,6 +2,7 @@ package org.kata.service.util;
 
 import lombok.Getter;
 import net.coobird.thumbnailator.Thumbnails;
+import org.kata.exception.ImageIsCorruptedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,8 +28,9 @@ public class ImageProcessor {
     private byte[] image;
 
     public void process(MultipartFile file) {
+        corruptedCheck(file);
+
         int size = (int) file.getSize();
-        filename = "ava.jpg";
 
         try {
             image = file.getBytes();
@@ -37,6 +39,7 @@ public class ImageProcessor {
         }
         if (size > MAX_SIZE) {
             compress(image, size);
+            filename = "ava.jpg";
         }
         hex = SHAsum(image);
     }
@@ -82,6 +85,13 @@ public class ImageProcessor {
                 formatter.format("%02x", b);
             }
             return formatter.toString();
+        }
+    }
+    public void corruptedCheck(MultipartFile file) {
+        try {
+            ImageIO.read(file.getInputStream()).flush();
+        } catch (Exception e) {
+            throw new ImageIsCorruptedException("Image " + file.getOriginalFilename() + " is corrupted");
         }
     }
 }
