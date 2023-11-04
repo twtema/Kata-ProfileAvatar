@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AvatarService {
     AvatarDto createAvatarDto(String icp, MultipartFile file);
-    ResponseEntity<AvatarDto> getAvatarDto(String icp);
-    public ResponseEntity<List<AvatarDto>> getAllAvatarsDto(String icp);
+    AvatarDto getAvatarDto(String icp);
+    List<AvatarDto> getAllAvatarsDto(String icp);
     void deleteAvatars(String icp, List<Boolean> flags);
 }

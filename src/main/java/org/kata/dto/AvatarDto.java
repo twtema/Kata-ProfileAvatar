@@ -11,10 +11,12 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class AvatarDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(description = "ICP", example = "1234567890")
     private String icp;
 
+    @Schema(description = "Имя файла", example = "avatar.png")
     private String filename;
 
-    @Schema(maxLength = 5000000)
+    @Schema(description = "Данные изображения, максимум 5МБ")
     private byte[] imageData;
 }

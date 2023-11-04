@@ -38,13 +38,14 @@ public class AvatarController {
             description= "Возвращает DTO Avatar по ICP")
     @GetMapping("/getAvatar")
     public ResponseEntity<AvatarDto> getAvatar(@Parameter(description = "ICP для получения") @RequestParam("icp") String icp) {
-        return avatarService.getAvatarDto(icp);
+        return new ResponseEntity<>(
+                avatarService.getAvatarDto(icp), HttpStatus.OK);
     }
     @Operation(summary = "Получить список Avatar по icp",
             description= "Возвращает список DTO Avatar по ICP")
     @GetMapping("/getAllAvatars")
     public ResponseEntity<List<AvatarDto>> getAllAvatars(@Parameter(description = "ICP для получения List<Avatar>") @RequestParam("icp") String icp) {
-        return avatarService.getAllAvatarsDto(icp);
+        return new ResponseEntity<>(avatarService.getAllAvatarsDto(icp), HttpStatus.OK);
     }
     @Operation(summary = "Запрос на удаление аватаров по icp и списку флагов",
             description = "Запрос на удаление одного или нескольких Avatar по icp и списку boolean (галочки) в соответствии со списком getAllAvatars(String icp)"
