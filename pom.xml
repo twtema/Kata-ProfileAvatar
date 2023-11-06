@@ -18,6 +18,7 @@
         <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
         <junit.version>4.13</junit.version>
         <javafaker.version>0.18</javafaker.version>
+        <thumbnailator.version>0.4.20</thumbnailator.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
@@ -71,5 +72,12 @@
             <artifactId>javafaker</artifactId>
             <version>${javafaker.version}</version>
         </dependency>
+        <!-- Для сжатия изображений -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>${thumbnailator.version}</version>
+        </dependency>
+
     </dependencies>
 </project>
