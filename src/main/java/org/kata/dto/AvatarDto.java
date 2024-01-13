@@ -1,11 +1,12 @@
 package org.kata.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+
+import java.time.ZonedDateTime;
 
 @Data
 @Builder
@@ -20,4 +21,7 @@ public class AvatarDto {
 
     @Schema(description = "Данные изображения, максимум 5МБ")
     private byte[] imageData;
+
+    @Schema(description = "Дата и время загрузки изображения")
+    private ZonedDateTime uploadDate;
 }

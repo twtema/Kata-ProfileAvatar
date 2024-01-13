@@ -8,13 +8,12 @@ import org.kata.service.AvatarService;
 import org.kata.service.util.ImageProcessor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.Reader;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +37,7 @@ public class AvatarServiceImpl implements AvatarService {
                 .icp(icp)
                 .filename(imageProcessor.getFilename())
                 .imageData(imageProcessor.getImage())
+                .uploadDate(ZonedDateTime.now())
                 .build();
         if (!avatarDto.getIcp().isEmpty()) {
             sendAvatarDto(avatarDto, imageProcessor.getHex());
