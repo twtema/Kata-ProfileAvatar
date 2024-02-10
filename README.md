@@ -17,7 +17,7 @@
 2. Настройка POSTMAN для отправки запроса:
 * Откройте POSTMAN.
 * Создайте новый POST-запрос.
-* Введите URL: http://localhost:8083/createAvatar.
+* Введите URL: http://localhost:8083/v1/avatar/createAvatar
 * В разделе "Body" выберите "form-data".
 * Добавьте два поля:
 * Ключ icp с типом "Text" и введите значение ICP.
