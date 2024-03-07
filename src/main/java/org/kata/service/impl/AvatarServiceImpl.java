@@ -29,8 +29,9 @@ public class AvatarServiceImpl implements AvatarService {
         this.loaderWebClient = WebClient.create(urlProperties.getProfileLoaderBaseUrl());
         this.imageProcessor = imageProcessor;
     }
+
     @Override
-    public AvatarDto createAvatarDto(String icp, MultipartFile file) {
+    public AvatarDto createAvatarDto(String icp, MultipartFile file, String conversationId) {
         AvatarDto avatarDto;
         imageProcessor.process(file);
         avatarDto = AvatarDto.builder()
@@ -40,59 +41,64 @@ public class AvatarServiceImpl implements AvatarService {
                 .uploadDate(ZonedDateTime.now())
                 .build();
         if (!avatarDto.getIcp().isEmpty()) {
-            sendAvatarDto(avatarDto, imageProcessor.getHex());
+            sendAvatarDto(avatarDto, imageProcessor.getHex(), conversationId);
             log.info("Success load Avatar for icp:{}", avatarDto.getIcp());
         }
         return avatarDto;
     }
 
     @Override
-    public AvatarDto getAvatarDto(String icp) {
+    public AvatarDto getAvatarDto(String icp, String conversationId) {
         return Optional.ofNullable(loaderWebClient.get().
-                uri(uriBuilder -> uriBuilder
-                        .path(urlProperties.getProfileLoaderGetAvatar())
-                        .queryParam("icp", icp)
-                        .build())
-                .retrieve()
-                .toEntity(AvatarDto.class)
-                .block())
+                        uri(uriBuilder -> uriBuilder
+                                .path(urlProperties.getProfileLoaderGetAvatar())
+                                .queryParam("id", icp)
+                                .build())
+                        .header("conversationId", conversationId)
+                        .retrieve()
+                        .toEntity(AvatarDto.class)
+                        .block())
                 .orElseThrow(() -> new AvatarNotFoundException("Avatar for icp " + icp + " not found"))
                 .getBody();
     }
 
     @Override
-    public List<AvatarDto> getAllAvatarsDto(String icp) {
+    public List<AvatarDto> getAllAvatarsDto(String icp, String conversationId) {
         return loaderWebClient.get().
                 uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileLoaderGetAllAvatars())
                         .queryParam("icp", icp)
                         .build())
+                .header("conversationId", conversationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<AvatarDto>>() {})
+                .bodyToMono(new ParameterizedTypeReference<List<AvatarDto>>() {
+                })
                 .block();
     }
 
     @Override
-    public void deleteAvatars(String icp, List<Boolean> flags) {
+    public void deleteAvatars(String icp, List<Boolean> flags, String conversationId) {
         loaderWebClient.delete()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileLoaderDeleteAvatar())
                         .queryParam("icp", icp)
                         .queryParam("flags", flags)
                         .build())
+                .header("conversationId", conversationId)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
     }
 
-    private void sendAvatarDto(AvatarDto dto, String hex) {
+    private void sendAvatarDto(AvatarDto dto, String hex, String conversationId) {
         loaderWebClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileLoaderPostAvatar())
                         .queryParam("icp", dto.getIcp())
                         .queryParam("hex", hex)
                         .build())
+                .header("conversationId", conversationId)
                 .body(Mono.just(dto), AvatarDto.class)
                 .retrieve()
                 .bodyToMono(Void.class)

@@ -1,8 +1,8 @@
 package org.kata.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,24 +32,36 @@ public class AvatarController {
             @ApiResponse(responseCode = "400", description = "Неверный запрос")
     })
     @PostMapping("/createAvatar")
-    public ResponseEntity<AvatarDto> uploadAvatar(@RequestParam("icp") String icp, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<AvatarDto> uploadAvatar(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @RequestParam("icp") String icp,
+            @RequestParam("file") MultipartFile file
+    ) {
         return new ResponseEntity<>(
-                avatarService.createAvatarDto(icp, file), HttpStatus.OK);
+                avatarService.createAvatarDto(icp, file, conversationId), HttpStatus.OK);
     }
 
     @Operation(summary = "Получить Avatar по icp",
-            description= "Возвращает DTO Avatar по ICP")
+            description = "Возвращает DTO Avatar по ICP")
     @GetMapping("/getAvatar")
-    public ResponseEntity<AvatarDto> getAvatar(@Parameter(description = "ICP для получения") @RequestParam("icp") String icp) {
+    public ResponseEntity<AvatarDto> getAvatar(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP для получения") @RequestParam("icp") String icp
+    ) {
         return new ResponseEntity<>(
-                avatarService.getAvatarDto(icp), HttpStatus.OK);
+                avatarService.getAvatarDto(icp, conversationId), HttpStatus.OK);
     }
+
     @Operation(summary = "Получить список Avatar по icp",
-            description= "Возвращает список DTO Avatar по ICP")
+            description = "Возвращает список DTO Avatar по ICP")
     @GetMapping("/getAllAvatars")
-    public ResponseEntity<List<AvatarDto>> getAllAvatars(@Parameter(description = "ICP для получения List<Avatar>") @RequestParam("icp") String icp) {
-        return new ResponseEntity<>(avatarService.getAllAvatarsDto(icp), HttpStatus.OK);
+    public ResponseEntity<List<AvatarDto>> getAllAvatars(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP для получения List<Avatar>") @RequestParam("icp") String icp
+    ) {
+        return new ResponseEntity<>(avatarService.getAllAvatarsDto(icp, conversationId), HttpStatus.OK);
     }
+
     @Operation(summary = "Запрос на удаление аватаров по icp и списку флагов",
             description = "Запрос на удаление одного или нескольких Avatar по icp и списку boolean (галочки) в соответствии со списком getAllAvatars(String icp)"
     )
@@ -61,22 +70,29 @@ public class AvatarController {
             @ApiResponse(responseCode = "400", description = "Неверный запрос")
     })
     @DeleteMapping("/deleteAvatars")
-    public ResponseEntity<HttpStatus> deleteAvatars(@Parameter(description = "ICP для удаления") @RequestParam("icp") String icp,
-                                                    @Parameter(description = "Флаги для удаления") @RequestParam("flags") List<Boolean> flags) {
-        avatarService.deleteAvatars(icp, flags);
+    public ResponseEntity<HttpStatus> deleteAvatars(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP для удаления") @RequestParam("icp") String icp,
+            @Parameter(description = "Флаги для удаления") @RequestParam("flags") List<Boolean> flags
+    ) {
+        avatarService.deleteAvatars(icp, flags, conversationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @Operation(summary = "Обновляет активный аватар",
-            description= "Обновляет аватар по icp и файлу-изображению")
+            description = "Обновляет аватар по icp и файлу-изображению")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "Avatar успешно обновлён"),
             @ApiResponse(responseCode = "400", description = "Неверный запрос")
     })
     @PatchMapping("/setActiveAvatar")
-    public ResponseEntity<AvatarDto> setActiveAvatar(@Parameter(description = "ICP для обновления") @RequestParam("icp") String icp,
-                                                     @Parameter(description = "Изображение для обновления") @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<AvatarDto> setActiveAvatar(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP для обновления") @RequestParam("icp") String icp,
+            @Parameter(description = "Изображение для обновления") @RequestParam("file") MultipartFile file
+    ) {
         return new ResponseEntity<>(
-                avatarService.createAvatarDto(icp, file), HttpStatus.ACCEPTED);
+                avatarService.createAvatarDto(icp, file, conversationId), HttpStatus.ACCEPTED);
     }
 
 
@@ -85,7 +101,7 @@ public class AvatarController {
             @ApiResponse(responseCode = "400", description = "Invalid info",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Avatar not found",
-                    content = @Content) })
+                    content = @Content)})
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(AvatarException.class)
